@@ -16,6 +16,7 @@ class Video:
         self.__spacing = spacing
         self.__focus_threshold = threshold
         self.__ramp_speed = ramp_speed
+        self.__default_ramp_speed = ramp_speed
 
     def write_frame(self, frame):
         height, width, _ = frame.shape
@@ -40,6 +41,12 @@ class Video:
 
     def frames(self):
         return self.__frames
+
+    def set_ramp_speed(self, ramp_speed):
+        self.__ramp_speed = ramp_speed
+
+    def default_ramp_speed(self):
+        return self.__default_ramp_speed
 
 
 class VideoObject:
@@ -191,6 +198,9 @@ class VideoObject:
     def crop_top(self):
         return self.__crop_top
 
+    def focus_time(self):
+        return self.__focus_time
+
     def release(self):
         if self.__frames:
             print("Releasing " + self.__name + " from memory")
@@ -202,8 +212,8 @@ class VideoObject:
         image = cv2.resize(image, (int(self.height() / image.shape[0] * image.shape[1]), self.height()))
         if self.__posX < 0 and self.__posX + image.shape[1] > self.__video.width() :
             front_crop = fabs(self.__posX)
-            rear_crop = image.width() - self.__video.width() - front_crop
-            object_cropped = image[0: self.height(), int(front_crop): (self.width() - rear_crop)]
+            rear_crop = image.shape[1] - self.__video.width() - front_crop
+            object_cropped = image[0: int(self.height()), int(front_crop): int(self.width() - rear_crop)]
             surface[self.__posY: self.__posY + self.height(), 0: object_cropped.shape[1]] = object_cropped
         elif self.__posX < 0:
             crop_amount = fabs(self.__posX)

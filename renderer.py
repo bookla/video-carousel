@@ -22,10 +22,10 @@ def render():
 
     total_length = int(float(script[-1][2]) * fps)
 
-    video = Video(total_length, fps, render_size[0], render_size[1], spacing=render_size[1]*0.05, threshold=0.47*render_size[0], ramp_speed=0.4)
+    video = Video(total_length, fps, render_size[0], render_size[1], spacing=render_size[1]*0.05, threshold=0.47*render_size[0], ramp_speed=0.2)
     objects = initialise_objects(script, for_video=video)
 
-    out = cv2.VideoWriter("output3.avi", cv2.VideoWriter_fourcc("M", "J", "P", "G"), video.fps,
+    out = cv2.VideoWriter("export.avi", cv2.VideoWriter_fourcc("M", "J", "P", "G"), video.fps,
                           (video.width(), video.height()))
 
     speed = video.width() * len(script) / total_length
@@ -51,11 +51,15 @@ def render():
             focus_object = objects[focus_object.index() + 1]
 
         if focus_object.focus_end() > time:
-            target_speed = (focus_object.x() + focus_object.width() - video.focus_threshold()) / (focus_object.focus_end() - time) / video.fps
+            new_target_speed = (focus_object.x() + focus_object.width() - video.focus_threshold()) / (
+                        focus_object.focus_end() - time) / video.fps
+            if fabs(target_speed - new_target_speed) > video.default_ramp_speed():
+                video.set_ramp_speed(1.1*fabs(target_speed - new_target_speed))
+            else:
+                video.set_ramp_speed(video.default_ramp_speed())
+            target_speed = new_target_speed
         else:
             target_speed = speed
-
-        # print(str(speed) + "->" + str(target_speed))
 
         if fabs(target_speed - speed) < video.ramp_speed():
             speed = target_speed
@@ -123,6 +127,7 @@ def initialise_objects(script, for_video: Video):
         i += 1
 
     return objects
+
 
 if __name__ == '__main__':
     render()
