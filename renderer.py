@@ -53,7 +53,7 @@ def render():
         if focus_object.focus_end() > time:
             new_target_speed = (focus_object.x() + focus_object.width() - video.focus_threshold()) / (
                         focus_object.focus_end() - time) / video.fps
-            if fabs(target_speed - new_target_speed) > video.default_ramp_speed():
+            if fabs(target_speed - new_target_speed) > video.default_ramp_speed() and focus_object.focus_start() > time:
                 video.set_ramp_speed(1.1*fabs(target_speed - new_target_speed))
             else:
                 video.set_ramp_speed(video.default_ramp_speed())
