@@ -4,34 +4,25 @@ import numpy as np
 from math import fabs
 import cv2
 import time as t
-from multiprocessing import Process
-
-
-def padding(video: Video):
-    return video.width()*0.05
 
 
 def render():
 
-    render_size = (1920, 1080)
-    fps = 24
-
     with open("script.csv") as csv_file:
         reader = csv.reader(csv_file)
-        script = list(reader)
+        script_raw = list(reader)
 
-    total_length = int(float(script[-1][2]) * fps)
-
-    video = Video(total_length, fps, render_size[0], render_size[1], spacing=render_size[1]*0.05, threshold=0.47*render_size[0], ramp_speed=0.2)
-    objects = initialise_objects(script, for_video=video)
+    script = Script(script_raw, thresh_rel_width=0.47, height_rel__height=0.9, center_vertically=True)
+    script.relative_spacing(script.height, 0.05)
+    video, objects = script.extract()
 
     out = cv2.VideoWriter("export.avi", cv2.VideoWriter_fourcc("M", "J", "P", "G"), video.fps,
                           (video.width(), video.height()))
 
-    speed = video.width() * len(script) / total_length
+    speed = video.width() * len(script_raw) / script.length()
     target_speed = speed
 
-    focus_object: VideoObject = VideoObject("", 0, -1, 0, -1, video, -1)
+    focus_object: VideoObject = EmptyVideoObject()
 
     rendering = True
     frame_no = -1
@@ -43,9 +34,9 @@ def render():
         frame_no += 1
         frame_count += 1
 
-        time = frame_no / fps
+        time = frame_no / video.fps
 
-        frame = np.zeros((render_size[1], render_size[0], 3), np.uint8)
+        frame = np.zeros((script.height, script.width, 3), np.uint8)
 
         if focus_object.index() != len(objects) - 1 and time >= focus_object.focus_end() or focus_object.index() == -1:
             focus_object = objects[focus_object.index() + 1]
@@ -114,19 +105,6 @@ def render():
 
         out.write(frame)
     out.release()
-
-
-def initialise_objects(script, for_video: Video):
-    objects = []
-
-    i = 0
-    for each_object in script:
-        obj = VideoObject(each_object[0], float(each_object[1]), float(each_object[2]), float(each_object[3]), float(each_object[4]), for_video, i, set_height=for_video.height() - padding(for_video), fps=float(each_object[5]), crop_top=int(each_object[6]), crop_bottom=int(each_object[7]))
-        obj.set_y(padding(for_video)/2)
-        objects.append(obj)
-        i += 1
-
-    return objects
 
 
 if __name__ == '__main__':
