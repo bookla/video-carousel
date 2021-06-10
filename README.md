@@ -82,4 +82,5 @@ Open command prompt (Windows) or Terminal (Mac). Run the following, replace _PAT
    
 > Again, ensure that you're running the same version of Python as the pip you used in step 2
 > 
-A small window should open for you to preview the render as it happens in real-time. Output video will appear in the folder after the rendering finished. The output file will be named "export.avi". If the rendering takes to long, or you wish to cancel the render, press Control + C in the terminal/command prompt window.
+6. <b>Wait until rendering is complete</b>  
+   A small window should open for you to preview the render as it happens in real-time. Output video will appear in the folder after the rendering finished. The output file will be named "export.avi". If the rendering takes to long, or you wish to cancel the render, press Control + C in the terminal/command prompt window.
