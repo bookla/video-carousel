@@ -7,7 +7,7 @@ import numpy as np
 
 class Script:
 
-    def __init__(self, script_array, spacing_rel_width: float = None, thresh_rel_width: float = None, height_rel__height: float = None, center_vertically=False):
+    def __init__(self, script_array, spacing_rel_width: float = None, thresh_rel_width: float = None, height_rel_height: float = None, center_vertically=False):
         self.__script_array = script_array
 
         self.width = int(script_array[0][0])
@@ -17,7 +17,7 @@ class Script:
         self.threshold = int(script_array[0][4])
         self.ramp_speed = float(script_array[0][5])
         self.__length = int(float(script_array[-1][2]) * self.__fps)
-        self.target_height = -1
+        self.target_height = int(script_array[0][6])
         self.y_offset = 0
 
         if spacing_rel_width is not None:

@@ -12,7 +12,7 @@ def render():
         reader = csv.reader(csv_file)
         script_raw = list(reader)
 
-    script = Script(script_raw, thresh_rel_width=0.47, height_rel__height=0.9, center_vertically=True)
+    script = Script(script_raw, thresh_rel_width=0.47, height_rel_height=0.9, center_vertically=True)
     script.relative_spacing(script.height, 0.05)
     video, objects = script.extract()
 
