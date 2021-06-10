@@ -138,6 +138,9 @@ class VideoObject:
         self.__index = index
         self.__video = video
 
+        if index == -1:
+            return
+
         if script_object is None and video_name is None:
             raise RuntimeError("Either video name or ScriptObject must be provided when creating a VideoObject")
         elif script_object is not None:
@@ -242,7 +245,7 @@ class VideoObject:
             ret, frame = self.__loader.read()
 
             if frame is not None:
-                frame = cv2.resize(frame, (int(self.__width / self.__scale), self.__setHeight))
+                frame = cv2.resize(frame, (int(self.__width / self.__scale + self.__total_crop_horizontal), self.__setHeight))
 
     def __raw_frame(self, frame_no):
         if not self.__frames:
@@ -269,7 +272,7 @@ class VideoObject:
         else:
             frame = self.__raw_frame(self.__current_frame)
 
-        frame = cv2.resize(frame, (int(self.__width / self.__scale), self.__setHeight))
+        # frame = cv2.resize(frame, (int(self.__width / self.__scale), self.__setHeight))
 
         return frame
 
@@ -344,6 +347,7 @@ class VideoObject:
 class EmptyVideoObject(VideoObject):
 
     def __init__(self):
+        super().__init__(Video(0, 0, 0, 0), -1, video_name="")
         return
 
     def focus_end(self):
