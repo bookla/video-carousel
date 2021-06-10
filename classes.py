@@ -79,10 +79,10 @@ class ScriptObject:
         self.trim_start = float(line_data[3])
         self.trim_end = float(line_data[4])
         self.fps_override = float(line_data[5])
-        self.crop_top = int(line_data[6])
-        self.crop_bottom = int(line_data[7])
-        self.crop_left = int(line_data[8])
-        self.crop_right = int(line_data[9])
+        self.crop_top_rel = float(line_data[6])
+        self.crop_bottom_rel = float(line_data[7])
+        self.crop_left_rel = float(line_data[8])
+        self.crop_right_rel = float(line_data[9])
         self.target_height = int(target_height)
         self.y_offset = int(y_offset)
 
@@ -90,7 +90,7 @@ class ScriptObject:
         return self.__name
 
     def raw(self):
-        return [self.__name, self.in_time, self.out_time, self.trim_start, self.trim_end, self.fps_override, self.crop_top, self.crop_bottom, self.crop_left, self.crop_right]
+        return [self.__name, self.in_time, self.out_time, self.trim_start, self.trim_end, self.fps_override, self.crop_top_rel, self.crop_bottom_rel, self.crop_left_rel, self.crop_right_rel]
 
     def video_object(self, video):
         return VideoObject(video, self.__index, script_object=self)
@@ -132,7 +132,7 @@ class Video:
 
 class VideoObject:
 
-    def __init__(self, video: Video, index, video_name=None, focus_in=None, focus_out=None, timecode_in=None, timecode_out=None, crop_top=50, crop_bottom=80, crop_left=0, crop_right=0, set_height=-1, fps=0, script_object: ScriptObject = None):
+    def __init__(self, video: Video, index, video_name=None, focus_in=None, focus_out=None, timecode_in=None, timecode_out=None, crop_top=0, crop_bottom=0, crop_left=0, crop_right=0, set_height=-1, fps=0, script_object: ScriptObject = None):
         self.__current_frame = 0
         self.__posY = 0
         self.__index = index
@@ -146,10 +146,10 @@ class VideoObject:
         elif script_object is not None:
             self.__name = script_object.name()
 
-            self.__crop_top = script_object.crop_top
-            self.__crop_bottom = script_object.crop_bottom
-            self.__crop_left = script_object.crop_left
-            self.__crop_right = script_object.crop_right
+            self.__crop_top_rel = script_object.crop_top_rel
+            self.__crop_bottom_rel = script_object.crop_bottom_rel
+            self.__crop_left_rel = script_object.crop_left_rel
+            self.__crop_right_rel = script_object.crop_right_rel
 
             self.__focus_in = script_object.in_time
             self.__focus_out = script_object.out_time
@@ -164,10 +164,10 @@ class VideoObject:
         else:
             self.__name = video_name
 
-            self.__crop_top = crop_top
-            self.__crop_bottom = crop_bottom
-            self.__crop_left = crop_left
-            self.__crop_right = crop_right
+            self.__crop_top_rel = crop_top
+            self.__crop_bottom_rel = crop_bottom
+            self.__crop_left_rel = crop_left
+            self.__crop_right_rel = crop_right
 
             self.__focus_in = focus_in
             self.__focus_out = focus_out
@@ -178,9 +178,6 @@ class VideoObject:
             self.__fps = fps
 
             self.__setHeight = int(set_height)
-
-        self.__total_crop_vert = self.__crop_top + self.__crop_bottom
-        self.__total_crop_horizontal = self.__crop_left + self.__crop_right
 
         self.__focus_time = self.__focus_out - self.__focus_in
         self.__length = self.__timecode_out - self.__timecode_in
@@ -194,8 +191,18 @@ class VideoObject:
         self.__clip_speed = self.__length / self.__focus_time
         self.__posX = video.width()
         self.__height, self.__width, actual_fps = video_loader.get_info(self.__name)
+
         self.__fps = actual_fps if self.__fps == 0 else self.__fps
         self.__scale = self.__height/self.__setHeight if self.__setHeight != -1 else 1
+
+        self.__crop_top = self.__height * self.__crop_top_rel / self.__scale
+        self.__crop_bottom = self.__height * self.__crop_bottom_rel / self.__scale
+        self.__crop_left = self.__width * self.__crop_left_rel / self.__scale
+        self.__crop_right = self.__width * self.__crop_right_rel / self.__scale
+
+        self.__total_crop_vert = self.__crop_top + self.__crop_bottom
+        self.__total_crop_horizontal = self.__crop_left + self.__crop_right
+
         self.__height -= self.__total_crop_vert * self.__scale
         self.__width -= self.__total_crop_horizontal * self.__scale
 
