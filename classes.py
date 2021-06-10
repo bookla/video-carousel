@@ -1,6 +1,5 @@
 import cv2
 from math import fabs
-import video_loader
 import os
 import numpy as np
 
@@ -26,11 +25,11 @@ class Script:
         if thresh_rel_width is not None:
             self.relative_threshold(self.width, thresh_rel_width)
             
-        if height_rel__height is not None:
-            self.relative_height(self.height, height_rel__height)
+        if height_rel_height is not None:
+            self.relative_height(self.height, height_rel_height)
 
-        if center_vertically and height_rel__height is not None:
-            self.y_offset = int(((1 - height_rel__height) / 2) * self.height)
+        if center_vertically and height_rel_height is not None:
+            self.y_offset = int(((1 - height_rel_height) / 2) * self.height)
 
     def relative_spacing(self, relative_to, fraction):
         self.spacing = relative_to * fraction
@@ -190,7 +189,7 @@ class VideoObject:
 
         self.__clip_speed = self.__length / self.__focus_time
         self.__posX = video.width()
-        self.__height, self.__width, actual_fps = video_loader.get_info(self.__name)
+        self.__height, self.__width, actual_fps = self.__get_info()
 
         self.__fps = actual_fps if self.__fps == 0 else self.__fps
         self.__scale = self.__height/self.__setHeight if self.__setHeight != -1 else 1
@@ -209,6 +208,13 @@ class VideoObject:
         self.__aspect = self.__width / self.__height
 
         self.__frames = []
+
+    def __get_info(self):
+        ret, frame = self.__loader.read()
+
+        fps = self.__loader.get(cv2.CAP_PROP_FPS)
+
+        return frame.shape[0], frame.shape[1], fps
 
     def jump_to_time(self, time):
         if time - self.__focus_in > self.__focus_time:

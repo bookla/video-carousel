@@ -20,7 +20,7 @@ The tool works using the concept of threshold and focus object. The focus object
 
 3.<b> Put files in the right place  </b>
 - Create a new folder
-- In that folder paste the three python files
+- In that folder paste the two python files
 - Create a folder inside this folder named "source"
 - Paste input videos into the source folder
 
