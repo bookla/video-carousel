@@ -25,7 +25,7 @@ The tool works using the concept of threshold and focus object. The focus object
 - Paste input videos into the source folder
 
 4. <b> Creating a script file  </b>
-&nbsp;Use sheets editor e.g. Google Sheets or Microsoft Excel to create an empty sheet. The format of the script file should be as follows.
+&nbsp;Use sheets editor e.g. Google Sheets or Microsoft Excel to create an empty sheet. The format of the script file should be as follows. Export the file as a Comma-Delimited (.csv) file and name is "script.csv". Place the file in the same folder as the two Python files.
    
 Row | A | B | C | D | E | F | G | H | I | J |
 --------- | ------- | ---------------- | ---------- | --------- | --------- | ---------| --------- | ---------| --------- | ---------:
