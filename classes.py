@@ -338,9 +338,9 @@ class VideoObject:
         image = image[int(self.__crop_top): int(self.__height / self.__scale + self.__crop_top), int(self.__crop_left): int(self.__width / self.__scale + self.__crop_left)]
         image = cv2.resize(image, (int(self.height() / image.shape[0] * image.shape[1]), self.height()))
         if self.__posX < 0 and self.__posX + image.shape[1] > self.__video.width():
-            front_crop = fabs(self.__posX)
+            front_crop = fabs(self.__posX) + 2
             rear_crop = image.shape[1] - self.__video.width() - front_crop
-            object_cropped = image[0: int(self.height()), int(front_crop): int(self.width() - rear_crop)]
+            object_cropped = image[0: int(self.height()), int(front_crop): image.shape[1] - int(rear_crop)]
             surface[self.__posY: self.__posY + self.height(), 0: object_cropped.shape[1]] = object_cropped
         elif self.__posX < 0:
             crop_amount = fabs(self.__posX)

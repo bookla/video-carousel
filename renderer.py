@@ -38,6 +38,9 @@ def render():
 
         frame = np.zeros((script.height, script.width, 3), np.uint8)
 
+        # EXPERIMENTAL: Use this to change background (B, G, R) value ranges from 0 to 255 inclusive
+        # frame[:] = (13, 13, 13)
+
         if focus_object.index() != len(objects) - 1 and time >= focus_object.focus_end() or focus_object.index() == -1:
             focus_object = objects[focus_object.index() + 1]
 
